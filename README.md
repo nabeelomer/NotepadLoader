@@ -1,6 +1,6 @@
 # Notepad Loader
 
-Runs notepad.exe on linux.
+Runs notepad.exe on MacOS.
 
 # License
 
