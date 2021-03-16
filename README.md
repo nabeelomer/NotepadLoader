@@ -6,4 +6,4 @@ Runs notepad.exe on MacOS.
 
 GPL2.
 
-This is based on https://github.com/taviso/loadlibrary which is also licensed under the GPL2. I have maintained all the original copyright notices.
+This is based on https://github.com/taviso/loadlibrary which is also licensed under the GPL2 and as derivative work this also is licensed under the GPL. I've maintained all original copyright notices.
