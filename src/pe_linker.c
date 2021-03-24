@@ -17,7 +17,6 @@
 // GNU General Public License for more details.
 //
 
-#include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <fcntl.h>
@@ -111,11 +110,13 @@ DWORD GetCurrentProcessId() {
     return 4096;
 }
 
+void* GenerateStub(char* name);
+
 int get_export(const char *name, void *result)
 {
         void **func = result;
         if (strcmp(name, "GetTickCount") == 0) {
-            *func = GetTickCount;
+            *func = GenerateStub(name);
             return 0;
         }
         if (strcmp(name, "GetSystemTimeAsFileTime") == 0) {
