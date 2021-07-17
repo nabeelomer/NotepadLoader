@@ -1,24 +1,21 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 #include "winnt_types.h"
 #include "pe_linker.h"
 #include "ntoskernel.h"
 #include "log.h"
 
-void* GenerateStub(char* name);
-
-int main(int argc, char **argv, char **envp)
+int main(int argc, char **argv, char **envq)
 {
-    GenerateStub();
-    exit(0);
     PIMAGE_DOS_HEADER DosHeader;
     PIMAGE_NT_HEADERS PeHeader;
 
     struct pe_image image = {
         .entry  = NULL,
-        .name   = "./bins/notepad.exe",
+        .name   = "../bins/notepad.exe",
     };
 
     // Load the mpengine module.

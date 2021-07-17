@@ -32,11 +32,13 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <err.h>
+#include <string.h>
 
 #include "winnt_types.h"
 #include "pe_linker.h"
 #include "ntoskernel.h"
 #include "log.h"
+#include "winapi.h"
 
 struct pe_exports {
         char *dll;
@@ -51,9 +53,11 @@ PKUSER_SHARED_DATA SharedUserData;
 #define DRIVER_NAME "pelinker"
 #define RVA2VA(image, rva, type) (type)(ULONG_PTR)((void *)image + rva)
 
-#define DBGLINKER(fmt, ...) printf("%s (%s:%d): " fmt "\n",     \
-                                   DRIVER_NAME, __func__,               \
-                                   __LINE__ , ## __VA_ARGS__);
+//#define DBGLINKER(fmt, ...) printf("%s (%s:%d): " fmt "\n",     \
+//                                   DRIVER_NAME, __func__,               \
+//                                   __LINE__ , ## __VA_ARGS__);
+
+#define DBGLINKER(fmt, ...)
 
 #define ERROR(fmt, ...) printf("%s (%s:%d): " fmt "\n", \
                                    DRIVER_NAME, __func__,               \
@@ -73,61 +77,52 @@ static RTL_BITMAP TlsBitmap = {
     .Buffer = (PVOID) &TlsBitmapData[0],
 };
 
-int get_data_export(char *name, uint32_t base, void *result)
-{
-    uint32_t *hack = result;
+//int get_data_export(char *name, uint32_t base, void *result)
+//{
+//    uint32_t *hack = result;
+//
+//    get_export(name, result);
+//
+//    *hack += base - 0x3000;
+//
+//    ERROR("THIS WAS A TEMPORARY HACK DO NOT CALL WITHOUT FIXING");
+//}
 
-    get_export(name, result);
-
-    *hack += base - 0x3000;
-
-    ERROR("THIS WAS A TEMPORARY HACK DO NOT CALL WITHOUT FIXING");
-}
-
-void * get_export_address(const char *name)
-{
-    void *address;
-    if (get_export(name, &address) != -1)
-        return address;
-    return NULL;
-}
-
-WINAPI DWORD GetTickCount() {
-    warnx("GetTickCount : %p", __builtin_return_address(0));
-    return 342522;
-}
-
-void GetSystemTimeAsFileTime(
-  PFILETIME lpSystemTimeAsFileTime
-) {
-    warnx("GetSystemTimeAsFileTime : %p", __builtin_return_address(0));
-    lpSystemTimeAsFileTime->dwLowDateTime = 2000;
-    lpSystemTimeAsFileTime->dwHighDateTime = 2000;
-}
-
-DWORD GetCurrentProcessId() {
-    warnx("GetCurrentProcessId : %p", __builtin_return_address(0));
-    return 4096;
-}
-
-void* GenerateStub(char* name);
+//void * get_export_address(const char *name)
+//{
+//    void *address;
+//    if (get_export(name, &address) != -1)
+//        return address;
+//    return NULL;
+//}
 
 int get_export(const char *name, void *result)
 {
         void **func = result;
         if (strcmp(name, "GetTickCount") == 0) {
-            *func = GenerateStub(name);
+            *func = GetTickCount;
             return 0;
         }
         if (strcmp(name, "GetSystemTimeAsFileTime") == 0) {
-            *func = GetTickCount;
+            *func = GetSystemTimeAsFileTime;
             return 0;
         }
         if (strcmp(name, "GetCurrentProcessId") == 0) {
-            *func = GetTickCount;
+            *func = GetCurrentProcessId;
             return 0;
         }
-        return -1;
+        if (strcmp(name, "GetStartupInfoW") == 0)
+        {
+            *func = GetStartupInfoW;
+            return 0;
+        }
+        if (strcmp(name, "GetCurrentThreadId") == 0)
+        {
+            *func = GetCurrentThreadId;
+            return 0;
+        }
+        *func = GenerateStub(name);
+        return 0;
 }
 
 static void *get_dll_init(char *name)
@@ -440,7 +435,7 @@ static int fix_pe_image(struct pe_image *pe)
                           0);
 
         if (image == MAP_FAILED) {
-                ERROR("failed to mmap desired space for image: %d bytes, image base %#x, %m",
+                ERROR("failed to mmap desired space for image: %d bytes, image base %#llx, %m",
                     image_size, pe->opt_hdr->ImageBase);
                 return -ENOMEM;
         }
@@ -666,7 +661,7 @@ bool setup_nt_threadinfo(PEXCEPTION_HANDLER ExceptionHandler)
     //}
 
     // Install descriptor
-    asm("mov %[segment], %%fs" :: [segment] "r"(pebdescriptor.entry_number*8+3));
+    asm("mov %[segment], %%gs" :: [segment] "r"(pebdescriptor.entry_number*8+3));
 
     return true;
 }

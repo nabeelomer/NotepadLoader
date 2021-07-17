@@ -1,0 +1,69 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"hasInstallRule" : true,
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "NotepadOnMacOS",
+					"targetIndexes" : 
+					[
+						0,
+						1
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "NotepadOnMacOS::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-NotepadOnMacOS-Debug-2cd9dfaa0c90709537f4.json",
+					"name" : "NotepadOnMacOS",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "asmjit::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-asmjit-Debug-180a3897619f3324815c.json",
+					"name" : "asmjit",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/Users/nabeelomer/Code/NotepadOnMacOS/build",
+		"source" : "/Users/nabeelomer/Code/NotepadOnMacOS"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 2
+	}
+}
